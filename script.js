@@ -1,14 +1,11 @@
-// Calculator state variables
 let currentInput = '0';
 let shouldResetDisplay = false;
 let lastOperator = null;
 let lastOperand = null;
 let isRadianMode = true;
 
-// Get the display element
 const display = document.getElementById('display');
 
-// Tab switching functionality
 function initializeTabs() {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -17,15 +14,12 @@ function initializeTabs() {
         btn.addEventListener('click', () => {
             const targetTab = btn.dataset.tab;
             
-            // Remove active class from all tabs and contents
             tabBtns.forEach(b => b.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
             
-            // Add active class to clicked tab and corresponding content
             btn.classList.add('active');
             document.getElementById(targetTab).classList.add('active');
             
-            // Manage calculator class for display visibility
             const calculator = document.querySelector('.calculator');
             if (targetTab === 'units') {
                 calculator.classList.add('units-active');
@@ -33,23 +27,16 @@ function initializeTabs() {
                 calculator.classList.remove('units-active');
             }
             
-            // Initialize units conversion if switching to units tab
             if (targetTab === 'units') {
                 updateUnits();
             }
             
-            // Manage focus based on active tab
             setTimeout(() => manageFocus(), 100);
         });
     });
 }
 
-/**
- * Updates the calculator display with proper mathematical symbols
- * @param {string} value - The value to display
- */
 function updateDisplay(value) {
-    // Convert operators to proper mathematical symbols for display
     let displayValue = value
         .replace(/\*/g, '×')
         .replace(/\//g, '÷')
@@ -62,49 +49,35 @@ function updateDisplay(value) {
     display.value = displayValue;
 }
 
-/**
- * Appends a character to the current display
- * @param {string} value - The character to append (number, operator, or decimal)
- */
 function appendToDisplay(value) {
-    // If we should reset the display (after calculation or error)
     if (shouldResetDisplay) {
         if (isOperator(value)) {
-            // If it's an operator, keep the current result and continue
             shouldResetDisplay = false;
         } else {
-            // If it's a number or decimal, start fresh
             currentInput = '0';
             shouldResetDisplay = false;
         }
     }
 
-    // Handle decimal point input
     if (value === '.') {
-        // Don't add decimal if one already exists in the current number
         const parts = currentInput.split(/[+\-*/]/);
         const lastPart = parts[parts.length - 1];
         if (lastPart.includes('.')) {
             return;
         }
-        // If the display is empty or ends with an operator, add "0."
         if (currentInput === '0' || isOperator(currentInput.slice(-1))) {
             currentInput += currentInput === '0' ? '.' : '0.';
         } else {
             currentInput += '.';
         }
     }
-    // Handle operator input
     else if (isOperator(value)) {
-        // Don't add operator if the last character is already an operator
         if (isOperator(currentInput.slice(-1))) {
-            // Replace the last operator with the new one
             currentInput = currentInput.slice(0, -1) + value;
         } else {
             currentInput += value;
         }
     }
-    // Handle number input
     else {
         if (currentInput === '0') {
             currentInput = value;
@@ -116,51 +89,25 @@ function appendToDisplay(value) {
     updateDisplay(currentInput);
 }
 
-/**
- * Inserts a function with both opening and closing parentheses
- * @param {string} func - The function to insert
- */
 function insertFunction(func) {
     if (shouldResetDisplay) {
         currentInput = '0';
         shouldResetDisplay = false;
     }
     
-    let insertPos;
     if (currentInput === '0') {
-        currentInput = func + ')';
-        insertPos = func.length;
+        currentInput = func;
     } else {
-        insertPos = currentInput.length + func.length;
-        currentInput += func + ')';
+        currentInput += func;
     }
     
     updateDisplay(currentInput);
-    
-    // Set cursor position between the parentheses
-    setTimeout(() => {
-        display.focus();
-        // Convert display position back to actual position
-        const displayValue = display.value;
-        const actualPos = displayValue.indexOf(')');
-        if (actualPos > -1) {
-            display.setSelectionRange(actualPos, actualPos);
-        }
-    }, 50);
 }
 
-/**
- * Checks if a character is an operator
- * @param {string} char - The character to check
- * @returns {boolean} - True if the character is an operator
- */
 function isOperator(char) {
     return ['+', '-', '*', '/', '<', '>', '>=', '<=', '='].includes(char);
 }
 
-/**
- * Clears the calculator display and resets state
- */
 function clearDisplay() {
     currentInput = '0';
     shouldResetDisplay = false;
@@ -169,9 +116,6 @@ function clearDisplay() {
     updateDisplay(currentInput);
 }
 
-/**
- * Deletes the last entered character
- */
 function deleteLast() {
     if (currentInput.length > 1) {
         currentInput = currentInput.slice(0, -1);
@@ -181,9 +125,6 @@ function deleteLast() {
     updateDisplay(currentInput);
 }
 
-/**
- * Toggles between radians and degrees mode
- */
 function toggleRadDeg() {
     isRadianMode = !isRadianMode;
     const radButton = document.querySelector('[onclick="toggleRadDeg()"]');
@@ -192,27 +133,20 @@ function toggleRadDeg() {
     }
 }
 
-/**
- * Performs the calculation and displays the result
- */
 function calculateResult() {
     try {
-        // Don't calculate if the expression ends with an operator
         if (isOperator(currentInput.slice(-1))) {
             updateDisplay('Error: Expression incomplete');
             shouldResetDisplay = true;
             return;
         }
 
-        // Check for empty input
         if (!currentInput || currentInput === '0') {
             return;
         }
 
-        // Store the current expression for repeat calculations
         const expression = currentInput;
         
-        // Check for unmatched parentheses
         const openParens = (expression.match(/\(/g) || []).length;
         const closeParens = (expression.match(/\)/g) || []).length;
         if (openParens !== closeParens) {
@@ -221,10 +155,8 @@ function calculateResult() {
             return;
         }
         
-        // Evaluate the expression safely
         let result = evaluateExpression(expression);
         
-        // Handle various error cases
         if (isNaN(result)) {
             updateDisplay('Error: Invalid calculation');
             shouldResetDisplay = true;
@@ -241,14 +173,12 @@ function calculateResult() {
             return;
         }
 
-        // Format the result to avoid floating point precision issues
         if (Math.abs(result) < 1e-10) {
             result = 0;
         } else {
             result = parseFloat(result.toPrecision(12));
         }
         
-        // Store for potential repeat calculations
         lastOperator = getLastOperator(expression);
         lastOperand = getLastOperand(expression);
         
@@ -262,16 +192,9 @@ function calculateResult() {
     }
 }
 
-/**
- * Safely evaluates a mathematical expression
- * @param {string} expression - The mathematical expression to evaluate
- * @returns {number} - The result of the calculation
- */
 function evaluateExpression(expression) {
-    // Remove any whitespace
     expression = expression.replace(/\s/g, '');
     
-    // Replace mathematical functions with JavaScript equivalents
     expression = expression
         .replace(/sqrt\(/g, 'Math.sqrt(')
         .replace(/cbrt\(/g, 'Math.cbrt(')
@@ -294,14 +217,12 @@ function evaluateExpression(expression) {
         .replace(/tanh\(/g, 'Math.tanh(')
         .replace(/factorial\(/g, 'factorial(');
     
-    // Add closing parentheses for degree mode conversions
     if (!isRadianMode) {
         let openParens = (expression.match(/\(/g) || []).length;
         let closeParens = (expression.match(/\)/g) || []).length;
         expression += ')'.repeat(Math.max(0, openParens - closeParens));
     }
     
-    // Check for division by zero before evaluation
     if (expression.includes('/0') && !expression.includes('/0.')) {
         const divByZeroPattern = /\/0(?![0-9.])/;
         if (divByZeroPattern.test(expression)) {
@@ -309,15 +230,9 @@ function evaluateExpression(expression) {
         }
     }
     
-    // Use Function constructor for safe evaluation
     return Function('"use strict"; return (' + expression + ')')();
 }
 
-/**
- * Factorial function
- * @param {number} n - The number to calculate factorial for
- * @returns {number} - The factorial result
- */
 function factorial(n) {
     if (n < 0) return NaN;
     if (n === 0 || n === 1) return 1;
@@ -328,11 +243,6 @@ function factorial(n) {
     return result;
 }
 
-/**
- * Gets the last operator from an expression
- * @param {string} expression - The mathematical expression
- * @returns {string|null} - The last operator or null
- */
 function getLastOperator(expression) {
     const operators = ['+', '-', '*', '/'];
     for (let i = expression.length - 1; i >= 0; i--) {
@@ -343,11 +253,6 @@ function getLastOperator(expression) {
     return null;
 }
 
-/**
- * Gets the last operand from an expression
- * @param {string} expression - The mathematical expression
- * @returns {string|null} - The last operand or null
- */
 function getLastOperand(expression) {
     const operators = ['+', '-', '*', '/'];
     let operand = '';
@@ -362,7 +267,6 @@ function getLastOperand(expression) {
     return operand || null;
 }
 
-// Unit conversion data
 const unitConversions = {
     length: {
         units: {
@@ -573,15 +477,11 @@ const unitConversions = {
     }
 };
 
-/**
- * Updates the unit dropdowns based on selected category
- */
 function updateUnits() {
     const category = document.getElementById('categorySelect').value;
     const fromUnit = document.getElementById('fromUnit');
     const toUnit = document.getElementById('toUnit');
     
-    // Clear existing options
     fromUnit.innerHTML = '';
     toUnit.innerHTML = '';
     
@@ -595,7 +495,6 @@ function updateUnits() {
             toUnit.add(option2);
         });
         
-        // Set default selections
         if (fromUnit.options.length > 0) {
             fromUnit.selectedIndex = 0;
             toUnit.selectedIndex = Math.min(1, toUnit.options.length - 1);
@@ -607,9 +506,6 @@ function updateUnits() {
     convertUnits();
 }
 
-/**
- * Converts units based on current inputs
- */
 function convertUnits() {
     const category = document.getElementById('categorySelect').value;
     const fromValue = parseFloat(document.getElementById('fromValue').value);
@@ -628,10 +524,9 @@ function convertUnits() {
         result = convertTemperature(fromValue, fromUnit, toUnit);
     } else {
         const conversionData = unitConversions[category];
-        const baseUnit = Object.keys(conversionData)[1]; // Get the base unit key
+        const baseUnit = Object.keys(conversionData)[1];
         const conversionRates = conversionData[baseUnit];
         
-        // Convert to base unit, then to target unit
         const baseValue = fromValue * conversionRates[fromUnit];
         result = baseValue / conversionRates[toUnit];
     }
@@ -639,20 +534,15 @@ function convertUnits() {
     toValueInput.value = result.toPrecision(8);
 }
 
-/**
- * Converts temperature between different units
- */
 function convertTemperature(value, from, to) {
     let celsius;
     
-    // Convert to Celsius first
     switch (from) {
         case 'c': celsius = value; break;
         case 'f': celsius = (value - 32) * 5/9; break;
         case 'k': celsius = value - 273.15; break;
     }
     
-    // Convert from Celsius to target
     switch (to) {
         case 'c': return celsius;
         case 'f': return celsius * 9/5 + 32;
@@ -660,9 +550,6 @@ function convertTemperature(value, from, to) {
     }
 }
 
-/**
- * Updates quick conversion reference
- */
 function updateQuickConversions(category) {
     const quickDiv = document.getElementById('quickConversions');
     
@@ -683,12 +570,7 @@ function updateQuickConversions(category) {
     quickDiv.textContent = quickRefs[category] || '';
 }
 
-/**
- * Handles keyboard input for the calculator
- * @param {KeyboardEvent} event - The keyboard event
- */
 function handleKeyboardInput(event) {
-    // Don't handle keyboard input if we're in the units tab
     const activeTab = document.querySelector('.tab-content.active').id;
     if (activeTab === 'units') {
         return;
@@ -696,12 +578,10 @@ function handleKeyboardInput(event) {
     
     const key = event.key;
     
-    // Prevent default behavior for calculator keys
     if ('0123456789+-*/.='.includes(key) || key === 'Enter' || key === 'Escape' || key === 'Backspace') {
         event.preventDefault();
     }
     
-    // Handle number and operator keys
     if ('0123456789'.includes(key)) {
         appendToDisplay(key);
     } else if ('+-*/'.includes(key)) {
@@ -717,18 +597,15 @@ function handleKeyboardInput(event) {
     }
 }
 
-// Initialize everything when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
     
     document.addEventListener('keydown', handleKeyboardInput);
     
-    // Add visual feedback for button presses via keyboard
     document.addEventListener('keydown', function(event) {
         const key = event.key;
         let button = null;
         
-        // Find the corresponding button
         if (key === 'Enter') {
             button = document.querySelector('[data-key="Enter"]');
         } else if (key === 'Escape' || key === 'c' || key === 'C') {
@@ -739,7 +616,6 @@ document.addEventListener('DOMContentLoaded', function() {
             button = document.querySelector(`[data-key="${key}"]`);
         }
         
-        // Add visual feedback
         if (button) {
             button.style.transform = 'scale(0.95)';
             
@@ -749,29 +625,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Only focus display if we're not in units tab
     const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
     if (activeTab !== 'units') {
         display.focus();
     }
     
-    // Make display editable and handle cursor
     display.addEventListener('input', function(e) {
         currentInput = display.value.replace(/×/g, '*').replace(/÷/g, '/');
     });
 });
 
-// Handle focus management when switching tabs
 function manageFocus() {
     const activeTab = document.querySelector('.tab-content.active').id;
     if (activeTab === 'units') {
-        // Don't auto-focus display in units tab
         const fromValue = document.getElementById('fromValue');
         if (fromValue) {
             fromValue.focus();
         }
     } else {
-        // Focus display for calculator tabs
         display.focus();
     }
 }
