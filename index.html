@@ -65,7 +65,7 @@
                 <button class="btn operator" onclick="calculateResult()">=</button>
                 <button class="btn number zero" onclick="appendToDisplay('0')" data-key="0">0</button>
                 <button class="btn number" onclick="appendToDisplay('.')" data-key=".">.</button>
-                <button class="btn equals" onclick="calculateResult()" data-key="Enter">▶</button>
+                <button class="btn equals" onclick="calculateResult()" data-key="Enter">=</button>
                 <button class="btn operator" onclick="appendToDisplay('+')" data-key="+">+</button>
             </div>
         </div>
@@ -113,7 +113,7 @@
                 <button class="btn operator" onclick="calculateResult()">=</button>
                 <button class="btn number zero" onclick="appendToDisplay('0')" data-key="0">0</button>
                 <button class="btn number" onclick="appendToDisplay('.')" data-key=".">.</button>
-                <button class="btn equals" onclick="calculateResult()" data-key="Enter">▶</button>
+                <button class="btn equals" onclick="calculateResult()" data-key="Enter">=</button>
                 <button class="btn operator" onclick="appendToDisplay('+')" data-key="+">+</button>
             </div>
         </div>
@@ -161,7 +161,7 @@
                 <button class="btn operator" onclick="calculateResult()">=</button>
                 <button class="btn number zero" onclick="appendToDisplay('0')" data-key="0">0</button>
                 <button class="btn number" onclick="appendToDisplay('.')" data-key=".">.</button>
-                <button class="btn equals" onclick="calculateResult()" data-key="Enter">▶</button>
+                <button class="btn equals" onclick="calculateResult()" data-key="Enter">=</button>
                 <button class="btn operator" onclick="appendToDisplay('+')" data-key="+">+</button>
             </div>
         </div>
@@ -183,21 +183,24 @@
                         <option value="power">Power</option>
                         <option value="pressure">Pressure</option>
                         <option value="data">Data Storage</option>
-                        <option value="currency">Currency</option>
                     </select>
                 </div>
                 
                 <div class="conversion-input">
                     <div class="input-group">
                         <label>From:</label>
-                        <input type="number" id="fromValue" placeholder="Enter value" oninput="convertUnits()">
-                        <select id="fromUnit" onchange="convertUnits()"></select>
+                        <div class="input-row">
+                            <input type="number" id="fromValue" placeholder="Enter value" oninput="convertUnits()">
+                            <select id="fromUnit" onchange="convertUnits()"></select>
+                        </div>
                     </div>
                     
                     <div class="input-group">
                         <label>To:</label>
-                        <input type="number" id="toValue" placeholder="Result" readonly>
-                        <select id="toUnit" onchange="convertUnits()"></select>
+                        <div class="input-row">
+                            <input type="number" id="toValue" placeholder="Result" readonly>
+                            <select id="toUnit" onchange="convertUnits()"></select>
+                        </div>
                     </div>
                 </div>
                 

@@ -29,6 +29,9 @@ function initializeTabs() {
             if (targetTab === 'units') {
                 updateUnits();
             }
+            
+            // Manage focus based on active tab
+            setTimeout(() => manageFocus(), 100);
         });
     });
 }
@@ -648,7 +651,6 @@ function handleKeyboardInput(event) {
 // Initialize everything when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
-    updateUnits(); // Initialize units conversion
     
     document.addEventListener('keydown', handleKeyboardInput);
     
@@ -678,11 +680,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Focus the display to ensure keyboard events are captured
-    display.focus();
+    // Only focus display if we're not in units tab
+    const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+    if (activeTab !== 'units') {
+        display.focus();
+    }
 });
 
-// Ensure the display stays focused for keyboard input
-display.addEventListener('blur', function() {
-    setTimeout(() => display.focus(), 0);
-});
+// Handle focus management when switching tabs
+function manageFocus() {
+    const activeTab = document.querySelector('.tab-content.active').id;
+    if (activeTab === 'units') {
+        // Don't auto-focus display in units tab
+        const fromValue = document.getElementById('fromValue');
+        if (fromValue) {
+            fromValue.focus();
+        }
+    } else {
+        // Focus display for calculator tabs
+        display.focus();
+    }
+}
