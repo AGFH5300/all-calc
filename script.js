@@ -45,11 +45,21 @@ function initializeTabs() {
 }
 
 /**
- * Updates the calculator display
+ * Updates the calculator display with proper mathematical symbols
  * @param {string} value - The value to display
  */
 function updateDisplay(value) {
-    display.value = value;
+    // Convert operators to proper mathematical symbols for display
+    let displayValue = value
+        .replace(/\*/g, '×')
+        .replace(/\//g, '÷')
+        .replace(/sqrt\(/g, '√(')
+        .replace(/cbrt\(/g, '∛(')
+        .replace(/pi/g, 'π')
+        .replace(/3\.14159/g, 'π')
+        .replace(/2\.71828/g, 'e');
+    
+    display.value = displayValue;
 }
 
 /**
@@ -107,7 +117,7 @@ function appendToDisplay(value) {
 }
 
 /**
- * Inserts a function with opening parenthesis
+ * Inserts a function with both opening and closing parentheses
  * @param {string} func - The function to insert
  */
 function insertFunction(func) {
@@ -117,11 +127,22 @@ function insertFunction(func) {
     }
     
     if (currentInput === '0') {
-        currentInput = func;
+        currentInput = func + ')';
     } else {
-        currentInput += func;
+        currentInput += func + ')';
     }
+    
+    // Move cursor position back by 1 to place it between the parentheses
     updateDisplay(currentInput);
+    
+    // Set cursor position inside the parentheses
+    setTimeout(() => {
+        const cursorPos = currentInput.length - 1;
+        if (display.setSelectionRange) {
+            display.focus();
+            display.setSelectionRange(cursorPos, cursorPos);
+        }
+    }, 0);
 }
 
 /**
@@ -174,24 +195,54 @@ function calculateResult() {
     try {
         // Don't calculate if the expression ends with an operator
         if (isOperator(currentInput.slice(-1))) {
+            updateDisplay('Error: Expression incomplete');
+            shouldResetDisplay = true;
+            return;
+        }
+
+        // Check for empty input
+        if (!currentInput || currentInput === '0') {
             return;
         }
 
         // Store the current expression for repeat calculations
         const expression = currentInput;
         
+        // Check for unmatched parentheses
+        const openParens = (expression.match(/\(/g) || []).length;
+        const closeParens = (expression.match(/\)/g) || []).length;
+        if (openParens !== closeParens) {
+            updateDisplay('Error: Unmatched parentheses');
+            shouldResetDisplay = true;
+            return;
+        }
+        
         // Evaluate the expression safely
         let result = evaluateExpression(expression);
         
-        // Handle division by zero
+        // Handle various error cases
+        if (isNaN(result)) {
+            updateDisplay('Error: Invalid calculation');
+            shouldResetDisplay = true;
+            return;
+        }
+        
         if (!isFinite(result)) {
-            updateDisplay('Error: Cannot divide by zero');
+            if (result === Infinity) {
+                updateDisplay('Error: Division by zero');
+            } else {
+                updateDisplay('Error: Result too large');
+            }
             shouldResetDisplay = true;
             return;
         }
 
         // Format the result to avoid floating point precision issues
-        result = parseFloat(result.toPrecision(12));
+        if (Math.abs(result) < 1e-10) {
+            result = 0;
+        } else {
+            result = parseFloat(result.toPrecision(12));
+        }
         
         // Store for potential repeat calculations
         lastOperator = getLastOperator(expression);
