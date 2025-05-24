@@ -25,6 +25,14 @@ function initializeTabs() {
             btn.classList.add('active');
             document.getElementById(targetTab).classList.add('active');
             
+            // Manage calculator class for display visibility
+            const calculator = document.querySelector('.calculator');
+            if (targetTab === 'units') {
+                calculator.classList.add('units-active');
+            } else {
+                calculator.classList.remove('units-active');
+            }
+            
             // Initialize units conversion if switching to units tab
             if (targetTab === 'units') {
                 updateUnits();
@@ -625,6 +633,12 @@ function updateQuickConversions(category) {
  * @param {KeyboardEvent} event - The keyboard event
  */
 function handleKeyboardInput(event) {
+    // Don't handle keyboard input if we're in the units tab
+    const activeTab = document.querySelector('.tab-content.active').id;
+    if (activeTab === 'units') {
+        return;
+    }
+    
     const key = event.key;
     
     // Prevent default behavior for calculator keys
