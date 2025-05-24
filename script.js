@@ -127,22 +127,15 @@ function insertFunction(func) {
     }
     
     if (currentInput === '0') {
-        currentInput = func + ')';
+        currentInput = func;
     } else {
-        currentInput += func + ')';
+        currentInput += func;
     }
     
-    // Move cursor position back by 1 to place it between the parentheses
     updateDisplay(currentInput);
     
-    // Set cursor position inside the parentheses
-    setTimeout(() => {
-        const cursorPos = currentInput.length - 1;
-        if (display.setSelectionRange) {
-            display.focus();
-            display.setSelectionRange(cursorPos, cursorPos);
-        }
-    }, 0);
+    // For now, just add the opening parenthesis - user can add closing one manually
+    // This gives better control over where to place the cursor
 }
 
 /**
