@@ -104,6 +104,11 @@ body {
     display: block;
 }
 
+/* Hide display when units tab is active */
+.calculator.units-active .display {
+    display: none;
+}
+
 /* Button Grid */
 .buttons {
     display: grid;
