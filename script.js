@@ -127,15 +127,19 @@ function insertFunction(func) {
     }
     
     if (currentInput === '0') {
-        currentInput = func;
+        currentInput = func + ')';
     } else {
-        currentInput += func;
+        currentInput += func + ')';
     }
     
     updateDisplay(currentInput);
     
-    // For now, just add the opening parenthesis - user can add closing one manually
-    // This gives better control over where to place the cursor
+    // Set cursor position between the parentheses
+    setTimeout(() => {
+        const cursorPos = currentInput.length - 1;
+        display.focus();
+        display.setSelectionRange(cursorPos, cursorPos);
+    }, 10);
 }
 
 /**
@@ -743,6 +747,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (activeTab !== 'units') {
         display.focus();
     }
+    
+    // Make display editable and handle cursor
+    display.addEventListener('input', function(e) {
+        currentInput = display.value.replace(/×/g, '*').replace(/÷/g, '/');
+    });
 });
 
 // Handle focus management when switching tabs
