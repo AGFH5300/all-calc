@@ -126,9 +126,12 @@ function insertFunction(func) {
         shouldResetDisplay = false;
     }
     
+    let insertPos;
     if (currentInput === '0') {
         currentInput = func + ')';
+        insertPos = func.length;
     } else {
+        insertPos = currentInput.length + func.length;
         currentInput += func + ')';
     }
     
@@ -136,10 +139,14 @@ function insertFunction(func) {
     
     // Set cursor position between the parentheses
     setTimeout(() => {
-        const cursorPos = currentInput.length - 1;
         display.focus();
-        display.setSelectionRange(cursorPos, cursorPos);
-    }, 10);
+        // Convert display position back to actual position
+        const displayValue = display.value;
+        const actualPos = displayValue.indexOf(')');
+        if (actualPos > -1) {
+            display.setSelectionRange(actualPos, actualPos);
+        }
+    }, 50);
 }
 
 /**
