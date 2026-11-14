@@ -195,6 +195,41 @@ body {
     grid-column: span 2;
 }
 
+/* Numerical calculus editor; other calculator tabs are unchanged. */
+.calculus-panel {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: hsl(var(--text-light));
+    font-size: 0.84rem;
+}
+.calculus-panel > label { font-weight: 600; }
+.calculus-panel input {
+    width: 100%;
+    min-width: 0;
+    margin-top: 5px;
+    padding: 10px 12px;
+    border: 1px solid hsl(var(--btn-hover));
+    border-radius: 10px;
+    background: hsl(var(--display-bg));
+    color: hsl(var(--display-text));
+    font: inherit;
+    font-size: 0.96rem;
+}
+.calculus-panel input:focus-visible {
+    outline: 2px solid hsl(var(--equals-bg));
+    outline-offset: 1px;
+}
+.calculus-parameters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+.calculus-hint { line-height: 1.5; }
+#calculusStatus { min-height: 1.1em; font-weight: 600; overflow-wrap: anywhere; }
+#calculusStatus[data-state="error"] { color: #ff9d82; }
+#calculusStatus[data-state="success"] { color: hsl(var(--equals-bg)); }
+
 /* Units Conversion Styles */
 .conversion-container {
     padding: 20px;

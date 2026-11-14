@@ -595,6 +595,9 @@ function updateQuickConversions(category) {
 }
 
 function handleKeyboardInput(event) {
+    // Let users type formulas and numerical bounds into Calculus inputs.
+    if (event.target && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName) &&
+        event.target !== display) return;
     const activeTab = document.querySelector(".tab-content.active").id;
     if (activeTab === "units") {
         return;
@@ -666,7 +669,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function manageFocus() {
     const activeTab = document.querySelector(".tab-content.active").id;
-    if (activeTab === "units") {
+    if (activeTab === "calculus") {
+        document.getElementById("calculusExpression").focus();
+    } else if (activeTab === "units") {
         const fromValue = document.getElementById("fromValue");
         if (fromValue) {
             fromValue.focus();

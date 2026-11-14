@@ -120,11 +120,29 @@
 
         <!-- Calculus Section -->
         <div id="calculus" class="tab-content">
+            <div class="calculus-panel">
+                <label for="calculusExpression">Function f(x)</label>
+                <input id="calculusExpression" type="text" value="x^2"
+                       placeholder="e.g. x^2 + sin(x)" spellcheck="false" autocomplete="off">
+                <div class="calculus-parameters">
+                    <label for="calculusPoint">Point x
+                        <input id="calculusPoint" type="number" step="any" value="2">
+                    </label>
+                    <label for="calculusStart">From a
+                        <input id="calculusStart" type="number" step="any" value="0">
+                    </label>
+                    <label for="calculusEnd">To b
+                        <input id="calculusEnd" type="number" step="any" value="2">
+                    </label>
+                </div>
+                <p class="calculus-hint">d/dx and lim use x; ∫ uses a to b; Σ sums integers a to b. Numerical approximations; trig in radians. Use ^ for powers and * for multiplication.</p>
+                <p id="calculusStatus" role="status" aria-live="polite"></p>
+            </div>
             <div class="buttons">
                 <!-- Row 1 -->
-                <button class="btn function" onclick="insertFunction('derivative(')">d/dx</button>
-                <button class="btn function" onclick="insertFunction('integral(')">∫</button>
-                <button class="btn function" onclick="insertFunction('limit(')">lim</button>
+                <button class="btn function" onclick="calculateCalculus('derivative')" title="Numerical derivative at x">d/dx</button>
+                <button class="btn function" onclick="calculateCalculus('integral')" title="Numerical integral from a to b">∫</button>
+                <button class="btn function" onclick="calculateCalculus('limit')" title="Numerical two-sided limit at x">lim</button>
                 <button class="btn operator" onclick="appendToDisplay('(')" data-key="(">(</button>
                 <button class="btn operator" onclick="appendToDisplay(')')" data-key=")">)</button>
                 <button class="btn clear" onclick="clearDisplay()">AC</button>
@@ -150,7 +168,7 @@
                 <!-- Row 4 -->
                 <button class="btn constant" onclick="appendToDisplay('3.14159')">π</button>
                 <button class="btn constant" onclick="appendToDisplay('2.71828')">e</button>
-                <button class="btn function" onclick="insertFunction('sum(')">Σ</button>
+                <button class="btn function" onclick="calculateCalculus('sum')" title="Finite sum for integer bounds a to b">Σ</button>
                 <button class="btn number" onclick="appendToDisplay('1')" data-key="1">1</button>
                 <button class="btn number" onclick="appendToDisplay('2')" data-key="2">2</button>
                 <button class="btn number" onclick="appendToDisplay('3')" data-key="3">3</button>
@@ -211,6 +229,7 @@
             </div>
         </div>
     </div>
+    <script src="calculus.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
